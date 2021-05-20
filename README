@@ -1,0 +1,63 @@
+TEMA 3
+Bucur Calin-Andrei
+332CB
+
+In primul rand trebuie mentionat ca nu am urmat pasii recomandati in enunt
+adica nu am folosit ierarhie de clase si nici PDA
+dar am inteles ca e ok.
+
+Partea de implementare a NFA si de conversie NFA to DFA am preluat-o cu 
+copy paste din tema2 deci nu voi mai intra in detalii despre ea.
+
+Partea de regex to NFA am implementat-o astfel:
+Citesc expresia ca un string
+Din ce am observat in teste nu avem epsilon dar in caz de orice
+encodez eps cu $
+Parcurg expresia si acolo unde am concatenare
+,adica intre doua caractere sau un caracter si o paranteza sau doua paranteze,
+adaug caracterul "." deoarece am nevoie ca acolo sa fie un operator concret
+
+Apoi transform expresia in forma postfix (motiv pt care am nevoie de operator pt concatenare).
+Fac asta folosind un queue in care se va afla expresia postfixed
+si o stiva pentru operatori.
+Parcurg expresia.
+Daca dau de un caracter il adaug in coada.
+Daca dau de "(" o adaug in stiva.
+Daca dau de ")" scot din stiva si adaug in coada pana scot o "(".
+Daca dau de un operator scot din stiva si adaug in coada pana cand in
+varful stivei e un operator cu precedenta mai mare apoi adaug in stiva operatorul curent.
+In final scot tot ce a ramas in stiva si adaug in coada. Rezultatul va fi in coada.
+
+Apoi fac conversia propriu zisa din regex in NFA.
+Folosesc o stiva de NFAs partiale astfel:
+Parcurg expresia postfixed.
+Daca intalnesc un caracter creez un NFA care accepta acel caracter.
+(O stare initiala si una finala + tranzitie intre ele pe acel caracter).
+Adaug NFA-ul in stiva.
+Daca intalnesc un operator scot din stiva numarul necesar de NFAs/operanzi
+(Doua NFAs pt "|" si "." iar pt "*" unul singur).
+Aplic compunerea corespunzatoare si adaug NFA-ul rezultat in stiva.
+In final in stiva va ramane doar NFA-ul final.
+
+Cat despre compuneri:
+Concatenare:
+#stari = #stariA + #stariB
+"Numele" starilor lui B vor fi "incrementate" cu nr. de stari al lui A
+Stare initiala = Stare initiala 1
+Stare finala = Stare finala A
+Delta = toate tranzitiile lui A si B plus o eps-tranzitie intre starea finala a lui A si cea initiala a lui B.
+Sau:
+#stari = #stariA + #stariB + o noua stare initiala + o noua stare finala
+"Numele" starilor lui B vor fi "incrementate" cu nr. de stari al lui A + 1
+"Numele" starilor lui A vor fi "incrementate" cu 1
+Delta = toate tranzitiile lui A si B plus cate o eps-tranzitie intre
+noua stare initiala si starile initiale ale A si B si intre starile finale ale A si B si noua stare finala.
+Kleene Star:
+#stari = #stariA + #stariB + o noua stare initiala + o noua stare finala
+"Numele" starilor NFA-ului vor fi "incrementate" cu 1
+Delta = toate tranzitiile NFA-ului plus cate o eps-tranzitie intre:
+-noua stare initiala si starea initiala NFA si noua stare finala
+-stare finala NFA si noua stare finala
+-noua stare finala si noua stare initiala
+
+Cred ca asta e cam tot daca nu mai explic partea de tema2. Pls nu depunctati pentru asta :) 
